@@ -4,7 +4,7 @@ use strict;
 use vars qw($VERSION);
 
 ### ($VERSION) = sprintf '%i.%03i', split(/\./,('$Revision: 0.1 $' =~ /Revision: (\S+)\s/)[0]);  # $Date: $
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 =head1 NAME
 
@@ -15,6 +15,21 @@ Crypt::KDF::_base
 sub new { die "must subclass"; }
 
 sub init { die "must subclass"; }
+
+sub kdf_hex
+{
+	my $self = shift @_;
+	my $ret;
+	if($_[0])
+	{
+		$ret=$self->kdf($_[0]);
+	}
+	else
+	{
+		$ret=$self->kdf();
+	}
+	return unpack('H*',$ret);
+}
 
 sub kdf { die "must subclass"; }
 
@@ -124,6 +139,7 @@ sub kdf_iv
 	return (substr($out,0,$kLen), substr($out,$kLen,$ivLen));
 }
 
+1;
 __END__
 
 =head1 EXAMPLES

@@ -3,8 +3,9 @@ package Crypt::KDF::OpenSSLPBEGenerator;
 use strict;
 use Digest::MD5;
 use vars qw($VERSION @ISA @EXPORT_OK);
+use Crypt::KDF::_base;
 
-($VERSION) = sprintf '%i.%03i', split(/\./,('$Revision: $' =~ /Revision: (\S+)\s/)[0]);  # $Date: $
+($VERSION) = sprintf '%i.%03i', split(/\./,('$Revision: 0.1 $' =~ /Revision: (\S+)\s/)[0]);  # $Date: $
 
 require Exporter;
 @EXPORT_OK = qw(opensslpbekdf_generate);
@@ -32,7 +33,7 @@ Quick functional interface to use OpenSSL PBE KDF.
 sub opensslpbekdf_generate
 {
 	my ($digest, $seed, $iv, $len) = @_;
-	my $kdf = __PACKAGE__->new(-digest => $digest, -seed => $seed, -iv => $iv);
+	my $kdf = Crypt::KDF::OpenSSLPBEGenerator->new(-digest => $digest, -seed => $seed, -iv => $iv);
 	return $kdf->kdf($len);
 }
 
@@ -61,7 +62,7 @@ sub new
 	}
 	if(exists $opts{-digestparam})
 	{
-		$self->{-digestparam} = $opts{-digestparam});
+		$self->{-digestparam} = $opts{-digestparam};
 	}
 	if(exists $opts{-seed})
 	{
@@ -95,7 +96,7 @@ sub init
 	}
 	if(exists $opts{-digestparam})
 	{
-		$self->{-digestparam} = $opts{-digestparam});
+		$self->{-digestparam} = $opts{-digestparam};
 	}
 	if(exists $opts{-seed})
 	{
@@ -133,11 +134,11 @@ sub kdf
 		}
 		if(exists $self->{-digestparam})
 		{
-			$d = new $self->{-digest}, @{ $self->{-digestparam} };
+			$d = $self->{-digest}->new(@{ $self->{-digestparam} });
 		}
 		else
 		{
-			$d = new $self->{-digest};
+			$d = $self->{-digest}->new();
 		}
 		if($last ne '')
 		{
@@ -153,6 +154,8 @@ sub kdf
 	}
 	return substr($out,0,$len);
 }
+
+1;
 
 __END__
 

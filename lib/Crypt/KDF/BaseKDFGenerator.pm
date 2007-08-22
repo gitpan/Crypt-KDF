@@ -2,8 +2,9 @@ package Crypt::KDF::BaseKDFGenerator;
 
 use strict;
 use vars qw($VERSION @ISA @EXPORT_OK);
+use Crypt::KDF::_base;
 
-($VERSION) = sprintf '%i.%03i', split(/\./,('$Revision: $' =~ /Revision: (\S+)\s/)[0]);  # $Date: $
+($VERSION) = sprintf '%i.%03i', split(/\./,('$Revision: 0.1 $' =~ /Revision: (\S+)\s/)[0]);  # $Date: $
 
 require Exporter;
 @EXPORT_OK = qw(baseKdf_generate);
@@ -31,7 +32,7 @@ Quick functional interface to use KDF.
 sub baseKdf_generate
 {
 	my ($digest, $seed, $counter, $len) = @_;
-	my $kdf = __PACKAGE__->new(-digest => $digest, -seed => $seed, -counter => $counter);
+	my $kdf = Crypt::KDF::BaseKDFGenerator->new(-digest => $digest, -seed => $seed, -counter => $counter);
 	return $kdf->kdf($len);
 }
 
@@ -61,7 +62,7 @@ sub new
 	}
 	if(exists $opts{-digestparam})
 	{
-		$self->{-digestparam} = $opts{-digestparam});
+		$self->{-digestparam} = $opts{-digestparam};
 	}
 	if(exists $opts{-counter})
 	{
@@ -100,7 +101,7 @@ sub init
 	}
 	if(exists $opts{-digestparam})
 	{
-		$self->{-digestparam} = $opts{-digestparam});
+		$self->{-digestparam} = $opts{-digestparam};
 	}
 	if(exists $opts{-counter})
 	{
@@ -138,11 +139,11 @@ sub kdf
 		my $d;
 		if(exists $self->{-digestparam})
 		{
-			$d = new $self->{-digest}, @{ $self->{-digestparam} };
+			$d = $self->{-digest}->new(@{ $self->{-digestparam} });
 		}
 		else
 		{
-			$d = new $self->{-digest};
+			$d = $self->{-digest}->new();
 		}
 		$d->add($self->{-seed});
 		$d->add(pack('N',$ct));
@@ -155,6 +156,8 @@ sub kdf
 	}
 	return substr($out,0,$len);
 }
+
+1;
 
 __END__
 
